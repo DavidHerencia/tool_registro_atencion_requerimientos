@@ -1,0 +1,223 @@
+AAA1) Automatizacion de atencion de requerimientos:
+Necesito mejorar como recojo la informacion de las solicitudes que atienede el equipo, para ello usare Appscript, google sheets y RDAs en python... Dejando una estructura que facilmente se implemente con agentes o IA en el futuro... 
+
+Entonces toda la captura de las solicitudes actualmente se hace mendiante un google forms, pero yo lo estoy cambiando, yo quiero hacerlo con un front en appscript, mas dinamico, mas amigable al usuario, intuitivo y sobretodo que recabe la informacion clara para procesar la solicitud de la manera más rapida y agil, sin bloqueantes o falta de informacion.
+
+Como es como un reemplazo a un formulario... Pero quiero que sea dinamico y se adapte rapido o facilmente al cambio, o por lo menos si se cambia de solicitudes y los campos de las solicitudes y la captura de la info necesaria se gestione desde sheets. 
+
+Claro que esto solo sera la captura correscta de informacion y más intuitivo para el usuario, que lo quiero mantener separado de la parte de automatización, quiero automatixar la atencion de las solicitudes que se pueden automatizar, ahi es donde entra los RDAs y a integracion con appscript de ser necesrio fresh, pero no se chocan con la captura de info, engranan si, pero no quiero que si uno deja de funcinar comprometa al otro.
+
+
+Acontinuacion inicio con la definicion de esta parte de captura de informacion correctamente.
+
+En base a cada requerimiento que se tenia los agrupe en 5 principales, de los cuales se desgloza los especificos...
+Los 5 grupos o requerimientos principales que deje son los siguientes:
+	-R1 Solicitar accesos de usuario en ARIS
+	-R2 Subir/Descargar diagramas en ARIS
+	-R3 Mantenimiento de procesos y variantes (Cambios de nombre, cambio de POw, etc)
+	-R4 Wizard Service
+	-R5 Otras consultas
+	
+Una de estas opciones es lo que el usuario ingresa inicialmente, para luego ir profundizando en su necesidad.
+Como dije esta es una agrupacion de los requerimientos para no abrumar al usuario, pero entonces cada uno tiene una sub lista.
+
+Les puse numero para en esta lista se mas facil, escribir pero el numero no es necesario aunque fresh tmbn usarlo:
+Entonces
+R1: 
+	-R1.1 Solicitar usuario diagramador en Aris (Aqui hay info que mostrar, Todo el equipo de banco tiene acceso a ARIS con permisos de visualizacion, los externos si tiene que solicitar su acceso ya sea para visualizacion o para visualizacion y edición. 
+	Los usuarios con permisos de diagramación que no utilicen ARIS durante 3 meses, se les quitara automaticamente los permisos de edición, tendran que volver a solicitarlo)
+		-R1.1.1 Accesos para personal Externo 
+		-R1.1.2 Accesos para personal Interno
+	- R1.2 Solicitar permisos de edición en una carpeta existente de ARIS (Los usuarios con permisos de edicion, no tienen permisos de edicion en todo ARIS, el equipo de AI Processes se encarga de dar los permisos en las carpetas especificas de la base de proyectos). 
+	
+R2: 
+	- R2.1 Subir diagrama a Aris a proyectos (Aun no va ser publicado, no esta listo)
+		- R2.1.1 Subir xml de diagrama a proyectos.
+	- Publicar diagrama en producción en ARIS (Si lo tienes en xml o ya esta en ARIS)
+		- R2.1.2 Si tienes el xml (si generaste el diagrama con los gpts o la gema)
+		- R2.1.3 Si el diagrama ya esta en ARIS (si el diagrama esta en proyectos en ARIS)
+	- Descargar diagrama en ARIS de produccion/otro primetro a la base de proyectos (para poder ser editado o ajustado y posteriormente publicado en producción)
+		
+R3: 
+	- R3.1 Cambiar Process Owner del proceso N4 o de la Variante
+	- R3.2 Modificar nombre y/o descripcion del proceso local N4
+	- R3.3 Modificación de nombre de la Variante existente
+	- R... Nueva variante
+	- R... Eliminar variante
+	- R... Fusionar variantes
+	- R... Mover variante de un proceso a otro
+	- R... Ingresar proceso N4 a perimetro
+	- R... Sacar proceso N4 de perimetro
+
+R4: 
+	- R4.1 Implementar Wizard en un nuevo servicio
+	- R4.2 Feedback sobre un Wizard implementado
+	
+R5:
+	- R5.1 Consultas sobre ARIS.
+	- R5.2 Consultas sobre Madurez.
+	- R5.3 Consultas sobre Gobierno de procesos.
+	- R5.4 Otras consultas.
+
+
+... Eso es lo que defini, los grupos de solicitudes, luego detalle sub grupos en caso tienen mas - internos indentados y si no, esa es una solicitud, es como decir las hojas son las solicitudes si lo vemos como un arbool..... 
+
+Este arbol se puede construir automaticamente a partir de una tabla de sheets.... Una hoja llamada Tipos_solicitudes
+
+* Estaba pensando en que las anotaciones que puse entre parentesis, se deberian mostrar por ejemplo cuando paso el mouse por el grupo de solicitud y sale una nubesita o no una nube sino una tarjeta de ello informativa,  Y que esas anotaciones tambien se pueden colocar y salen del sheet de donde se arma el arbol. 
+
+
+* Quiero que quede como un framework de formulario que se construye a partir de esa tabla de sheet para recabar informacion... 
+* Ojo esa es la lista de solicitudes, pero tambien falta los item o preguntas o datos que se necesita recoger, esa lista tambien como ponerlo en otra hoja, esta hoja seria Detalle_infomacion_solicitudes, que se crea automaticamente una plantilla para que completen las preguntas o datos que quieran: uno por fila y hay una columna que los agrupa por tipo de solicitud...  
+
+
+Asi controlamos el contenido del texto desde aqui, y sin tener que tocar el codigo. 
+
+Incluso tener esto no sirve, si queremos modificar, simplemente le pedimos a nuestro agente de codigo que haga las adaptaciones y modificaciones necesarias segun ese archivo cuando se necesite, pero si no es cambio estructural y solo de contenido lo facilita completamente. 
+
+############################### Listo, hasta aqui tenemos  definida la estructura princiapal... los elementos para cada solicitud mejor dicho el contenido, si lo saca directamente de esa hoja, entonces una columna con la inf o detalles de ahi se saca si va haber eso que digo de ayudas cuando posiciona el mouse sobre el elemento en cuestion, sea boton desplegable o plahce holder, dependiendo pues.  Pero manteniendo simple y entendible la estructura de estas hojas.
+
+
+A continuacion te dare mas detalle de los flujos y las reglas y demas cosas de cada tipo de solicitud: 
+
+
+R1: 
+Por ejemplo si el usuario seleciona este grupo de solicitud, su solicitud una de las 2 opciones, quiero que le salga una pregunta y deba seleccionar alguna de las 2 opciones, y si pone el mouse en el icono de i encerrado o icono de info si hace click se muestre la anotacion breve y directa de cuando usar esa opcion, es decir, cuando hace click en el icono se abre esa info o si se pone el mouse sobre ese boton o esa opcion, si se quita el mouse de encima del objeto que ya no se muestre. 
+	-R1.1 Solicitar usuario diagramador en Aris (Aqui hay info que mostrar, Todo el equipo de banco tiene acceso a ARIS con permisos de visualizacion, los externos si tiene que solicitar su acceso ya sea para visualizacion o para visualizacion y edición. 
+	Los usuarios con permisos de diagramación que no utilicen ARIS durante 3 meses, se les quitara automaticamente los permisos de edición, tendran que volver a solicitarlo)
+		-R1.1.1 Accesos para personal Externo (Esto al ser una hoja, ya es un tipo de solicitud)
+			Aqui se le indica que para poder brindarle este acceso se necesita un correo simple con el VoBo de su jefe en el banco. Y un campo para cargar ese archivo en pdfo docs o link de drive. 
+			P-registro para el que es el acceso.
+			Nombres completos 
+			Apellidos completos 
+			Motivo de acceso a ARIS (texto brebe 2 o 3 lineas como maximo)
+			
+		-R1.1.2 Accesos para personal Interno
+			P-registro para el que es el acceso.
+			Nombres completos 
+			Apellidos completos 
+			Motivo de acceso a ARIS (texto brebe 2 o 3 lineas como maximo)
+	- R1.2 Solicitar permisos de edición en una carpeta existente de ARIS (Los usuarios con permisos de edicion, no tienen permisos de edicion en todo ARIS, el equipo de AI Processes se encarga de dar los permisos en las carpetas especificas de la base de proyectos). 
+		Aqui es necesario decir que solo le podemos dar accesos de edicion en carpetas que estan en la base de proyectos. 
+		Los items que se piden son:
+		Link a la carpeta en ARIS. (Indicaciones, que entre a ARIS (link adjunto yo) vaya hasta la carpeta en cuestion, copie el link que le sale en el navegador y lo pegue aqui.)
+	
+R2: 
+Aqui al usaurio se le pregunta si quiere subir un diagrama a produccion a proyectos o descargar un diagrama a proyectos y un botncito de ayuda donde si le da click hay una explicaicon de cual opcion le conviene segun lo que necesita, solo texto informativo: y bueno las opciones .... 
+	- R2.1 Subir diagrama a Aris a proyectos (Aun no va ser publicado, no esta listo)
+		- R2.1.1 Subir xml de diagrama a proyectos. 
+			aqui se pide:
+			Taxonomia del proceso que se esta subiendo.
+			Adjunte el codigo xml, sea pegando el codigo o adjuntando un archivo.
+	- R2.2 Publicar diagrama en producción en ARIS (Si lo tienes en xml o ya esta en ARIS)
+		Si el usuario quiere publicar su diagrama en produccion aqui le preguntamos, si lo tiene en xml porque lo hizo con la gema, o si lo tiene ya en ARIS. 
+		- R2.2.2 Si tienes el xml (si generaste el diagrama con los gpts o la gema)
+			Taxonomia del proceso variante
+			Adjunte el codigo xml, sea pegando el codigo o adjuntando un archivo.
+			Informacion para el mapa de roles: 
+				(Aqui lo dejaremos asi por ahora, porque es un poco mas complejo pero la data que se va recoger es una minitabla de 2 columnas, la col1 seria las calles en el diagrama bpmn, y la col 2 el equipo de banco... pero aqui aun dejemoslo como una caja de texto, porque al final quiero hacerlo como una herramienta interactiva que les haga facil y ayude a completar esa info, pero en la base se guarda como texto con separadores nomas, como estilo parrafo calle ** equipo1+ calle2 **equipo4, algo asi se guarda, entonces por eso dejemoslo ahora como cuadro de texto, luego editare ahi la herramienta para uqe sea interactivo y facil.)
+		- R2.2.3 Si el diagrama ya esta en ARIS (si el diagrama esta en proyectos en ARIS)
+			Taxonomia del proceso variante
+			Informacion para el mapa de roles igual que el anterior, se reusa en realidad: 
+				(Aqui lo dejaremos asi por ahora, porque es un poco mas complejo pero la data que se va recoger es una minitabla de 2 columnas, la col1 seria las calles en el diagrama bpmn, y la col 2 el equipo de banco... pero aqui aun dejemoslo como una caja de texto, porque al final quiero hacerlo como una herramienta interactiva que les haga facil y ayude a completar esa info, pero en la base se guarda como texto con separadores nomas, como estilo parrafo calle ** equipo1+ calle2 **equipo4, algo asi se guarda, entonces por eso dejemoslo ahora como cuadro de texto, luego editare ahi la herramienta para uqe sea interactivo y facil.)
+	- R2.3 Descargar diagrama en ARIS de produccion/otro primetro a la base de proyectos (para poder ser editado o ajustado y posteriormente publicado en producción)	
+		Aqui se pide:
+		P-Registro de quien lo solicita.
+		Link al diagrama que se quiere descargar mismas indicaciones que para la carpeta, sea carpeta o el diagrama mismo fresh: igual lo pego aqui por si acaso (Indicaciones, que entre a ARIS (link adjunto yo) vaya hasta la carpeta en cuestion, copie el link que le sale en el navegador y lo pegue aqui.)
+		Taxonomia del proceso que se esta descargando.
+
+R3: (Algo importante con este grupo es que se guarda en otra hoja del sheet, porque son de mantenimiento, en un ahoja llamada "Solicitudes_mantenimiento" y la estructura de la info que se guarda es maso esto: 
+Fecha de Solicitud	Nombre de Solicitante	Acción	ID del proceso N4 inicial	Nombre del proceso N4 inicial	ID Variante	Nombre de variante	POw Anterior	Comentario (Opcional)	ID del proceso N4 final	Nombre del proceso N4 final	ID Variante final	Nombre de variante final	POw Final	"Sustento de VB del Process Owner o con ligeras modficaciones, ya que si guardo la info que estaba antes del cambio. esa version puede quedar)
+Link Carpeta Sustento"	Nueva descripción local	Motivo porque se ingresa o saca de perimetro el proceso)
+Aqui se le preungta al usuario que desea hacer:
+	- R3.1 Cambiar Process Owner del proceso N4 o de la Variante
+		Aqui se le pregunta si el cambio de POw es de N4 o de una variante de N4 (ojo en todos lados donde lees variante es ocmo si fuera el N5, N1 = 1, N2 = 1.1 , N3, 1.1.5, N4 = 1.3.2.1 y N5 o variantes =1.3.2.1_P01, como una ip hasta el N4 masomnos para que se entienda)
+		Si es N4, se le pide el N4 y si es N5, de le pide eso, que ingrese taxo o por nombre del proceso con cualquiera de los 2.
+		Una vez ingresa, se le muestra el Pow o la lista de POws, si ingreso N5, igual se le muestra el N4 que tabmien se involucra, y la lista de Pows del N4, Si eligio cambio de POw N4, ahi solo se muestra el N4 y su lista de Pows y si hay algun N5 de ese N4 en el que sea POw el o ella sol@s o si son parte de la lista. 
+		
+		Si esta seguro se le pide continuar sino hacia atras, con botones.
+		
+		Luego se le pide: 
+		Si tiene al nuevo POw, que lo ingrese... Su nombre
+		Si no lo tiene que selecionees Por asignar (informativo que si selecciona esto es porque no reconoce ese proceso)
+		
+		
+	- R3.2 Modificar nombre y/o descripcion del proceso local N4
+		Se le pregunta que proceso es, ingresando taxonomia o nombre, completando uno se completa el otro y se muestra sudecricion.
+		Luego se le muestran botonoes, cambiar nombre, cambiar descripcion, en el que haga click se abre o bueno, se le muestra donde va escribir el nuevo nombre, o la nueva descripcion o ambos. 
+		
+	- R3.3 Modificación de nombre nombre y/o descripcion de la Variante existente
+		Se le pregunta que proceso es, ingresando taxonomia o nombre, completando uno se completa el otro y se muestra sudecricion.
+		Luego se le muestran botones, cambiar nombre, cambiar descripcion, en el que haga click se abre o bueno, se le muestra donde va escribir el nuevo nombre, o la nueva descripcion o ambos. 
+	- R... Nueva variante
+		Se le pide el N4, por taxo o nombre, luego se le muestra las variantes, si es un 4 con mas de 10 n5 o variantes, entonces usar paginado de maximo 10 y asi, se muestra de las variantes el codigo n5, el nombre, la descripcion y listo.
+		Y se le pide ingresar la taxo de n5 correcta, se valida que no exista y si no es la que sigue en el orden, porque son P01, p02, P03, P04 .... la nueva deberia ser P05, pero si no es, se le muestra un warning, alert nomas, pero no es bloqueandte, se le pide ingresar el nombre, el POw, nombre o Pregistro,    o si aun no se sabe quien sera, se seleciona por asignar.
+		Descripción de la variante o seleccionar si es igual descripcion que el N4.
+		y Comentario opcional. 
+	- R... Eliminar variante
+		Se le pide la taxonimia del N5, o con el nombre
+		Motivo por el que se elimina
+	- R... Fusionar variantes
+		se le pide ingresar el numero de procesos o variantes que se van a fusionar
+		Se le pide la taxonimia del N5, o con el nombre de ambos o de la lista de procesos involucrados
+		Motivo por el que se fusiona.
+	- R... Mover variante de un proceso a otro
+		Se le pide la taxonimia del N5, o con el nombre de ambos procesos involucrados
+		Motivo por el que se movio.
+	- R... Ingresar proceso N4 a perimetro
+		Se le pide el N4, por taxo o nombre del n4, verificar que esta fuera de perimetro.
+		Motivo por el cual se ingresa a perimetro
+	- R... Sacar proceso N4 de perimetro
+				Se le pide el N4, por taxo o nombre del n4, verificar que esta fuera de perimetro.
+		Motivo por el cual se saca de perimetro
+
+Ademas cada una de las solicitudes en este grupo necesita sustento de correo simple, del POw, si es el POw quien lo solicita ya no se necesita, Pero en el campo de sustento se pone EL POw fue quien lo solicito. O subir archivo con el sustento si es que no es el POw, preguntarle al ingresar en este grupo si es que es el POw del proceso del que hara la solicitud. 
+
+
+R4: En este no le pngamos mucho foco, por ahora basta con colocar 4 cosas sencillas y listo, al grano
+	- R4.1 Implementar Wizard en un nuevo servicio
+		- Detalle indicar la necesidad que se piensa cubrir
+		- Proceso asociado al servicio que se quiere mejorar
+		- Indicar el numero de casos que se atenderian
+		- Indicar el imacto que se busca optener
+	- R4.2 Feedback sobre un Wizard implementado
+		- Positivo o negativo
+		- Detalle del feedback
+	
+	
+R5:
+	- R5.1 Consultas sobre ARIS.
+		Ingrese su consulta o cumuniquese con el equipo y se muestra lista del equipo.
+	- R5.2 Consultas sobre Madurez.
+		Ingrese su consulta o cumuniquese con el equipo y se muestra lista del equipo, los que pueden atender ello.
+	- R5.3 Consultas sobre Gobierno de procesos.
+		Ingrese su consulta o cumuniquese con el equipo y se muestra lista del equipo, los que pueden atender ello.
+	- R5.4 Otras consultas.
+		Ingrese su consulta.
+	
+	
+
+<Antes de continuar, aqui especialmente aqui hay algunas comporbaciones, algunas ayudas para comletar la info, para que no se comentan eerroes de los datos.... como digo hare una forma interactiva de completar la info del mapa de roles, eso pero tambien hay otras cosas... 
+
+Por ejemplo, las taxo y nombre de proceso, se obtienen y se envian o se pueden enviar en una carga inicial... 
+
+Los usuarios, cuando se necesita el nombre o asi no se puede enviar todo porque son como 7 mil filas, aunque son pcas columnas, o 3  importantes y listo, bueno, evaluable...
+
+Pero en la mayoria de casos si es informacion que ya existe, incluire ayudas seran como placeholder, donde se ingresa el texto vas escribiendo y a como vas escribiendo te van saliendo las opciones como buscador y tienes que seleecionar alguna de las opciones que te sale.... asi uniformisamos la informacion.... claro que en la info nueva que se eta ingresando no se hace esto.... 
+
+Tmabien hay validaciones, y si no existe lo que esta buscando se le recomienda , se le da feeedback, por ejemplo si esta intentando subir un xml de diagrama o algo y ahi donde se le pide la taxo y no encuentra o esta ingresando una que no existe dependiendo el caso se le recomienda que o esta escribiendo mal o no existe, si no existe se recomiend a crear nueva variante o asi... pero no permite se le da recomendaciones y asi. 
+
+Segun la solicitud sus campos son obligatorios, tenerlos completos , ojo que ahi se hace como un flujo para que sea informativo, pero al final lo que se obtiene es un payload que se va escribir en un sheet de registro de requerimientos, y bueno las que son de mantenimiento esa tambien se completa en otra oja adicional, o sea, si se pone la solicitud en la hoa re registro, pero su info tambien se completa en su hoja dedidcada ya que de essas solicitudes hay varia info y es un grupo que es continuo. en el registro se guarda, quien, cuando el tipo la taxo en cuestion y listo, el Id con el que se asocia en la tabla de matenimiento.... por ejemplo.
+
+
+En mi tabla de registro de requerimients, quiero que se ponga tambien la fecha en que se ingresa, aunque al user no lo ve, el correo del user que registra y el payload pues, aunque si hay items o elementos e cada solicitud que se reutilizan, quiero que se guarden juntas las columnas de esos por tipo de solicitud, para en la tabbla ponerle colores especificos, columna de estado de la solicitud, del responsable asignado, de mensajes adicional. Año y bueno, creo que puedo aceptar una propuesta de las columnas de esa tabla en base a lo que te di tambien, igual vamos a ir iterando hasta logar un resultado final con el que nos quedemos.
+
+
+Las hojas y demas datos que no queda claro de donde sacar podemos ir definiendo donde esta esa info tambien,que hojas leer que columnas o data usar y asi. por ahora en esta 1 version, vamos y como quedan las hojas de registro tambien.
+
+
+- Recuerda que el fronted sera en appscript y todo al final se escribe en un sheet en hojas especificas, ayudame a optimizar, la idea es que la herrmainta esta de atencion de requerimientos sea super rapida, optimizada. 
+Optimizacion con la data, con el codigo, hacerlo bonito y veloz.
+
+
+Sobre todo ordenar y estructurar todo cmo piesas que luego sean reutilizables.
