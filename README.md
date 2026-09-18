@@ -6,12 +6,18 @@ Aplicación HTML Service vinculada a una hoja de cálculo de Google Sheets. Sust
 
 - Los 22 tipos hoja de solicitudes R1 a R5, con ID internos estables y códigos visibles.
 - Árbol y campos declarativos en `Tipos_solicitudes` y `Detalle_informacion_solicitudes`.
-- Búsqueda diferida de procesos y usuarios en servidor, con espera breve y caché local del cliente.
+- Estrategia de baja latencia: una llamada `bootstrapApp()` carga la configuración publicada y todos los catálogos; una llamada `submitRequest(form)` realiza el envío autoritativo.
 - Validación en cliente como ayuda y validación autoritativa en servidor.
 - Registro concurrente seguro con UUID, ticket `REQ-YYYY-NNNNNN`, ledger de idempotencia y confirmación por lectura posterior.
 - Registro especializado de mantenimiento R3, custodia de archivos en Drive y `Automation_outbox` independiente.
 
 ## Instalación en una hoja vinculada
+
+## Estrategia de baja latencia
+
+La interfaz descarga un payload completo al iniciar: configuración publicada, identidad, ajustes, tipos, campos, procesos, usuarios y contactos de equipo. Las búsquedas, autocompletado, paginación de variantes, contactos R5, resúmenes y validaciones de ayuda se ejecutan en el navegador sin llamadas interactivas adicionales. El formulario solo vuelve al servidor para el envío final.
+
+Este enfoque elimina esperas durante la captura, a cambio de transferir el catálogo completo. Para catálogos de hasta 7.000 usuarios se debe mantener el payload compacto, limitar campos de usuario a los necesarios y publicar una configuración razonable. Si el catálogo crece de forma importante, el coste principal será memoria y descarga inicial del navegador, no la cantidad de llamadas. El servidor conserva la validación autoritativa, la persistencia con bloqueo e idempotencia, la custodia de archivos en Drive, XML, el ledger, la lectura de confirmación y `Automation_outbox`. Las funciones de configuración, publicación, mantenimiento y administración de Sheets siguen siendo backend.
 
 1. Cree o abra la hoja de cálculo que será el contenedor.
 2. Abra **Extensiones > Apps Script**.

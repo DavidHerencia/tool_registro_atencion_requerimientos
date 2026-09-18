@@ -16,7 +16,22 @@ function doGet() {
 }
 
 function bootstrapApp() {
-  return { config: getPublishedConfiguration(), identity: { email: Session.getActiveUser().getEmail() || '' } };
+  var config = getPublishedConfiguration();
+  var users = getCatalogRows_(SHEETS.USERS).filter(function(row) { return asBool_(row.active); });
+  var processes = getCatalogRows_(SHEETS.PROCESSES).filter(function(row) { return asBool_(row.active); });
+  var team = getCatalogRows_(SHEETS.TEAM).filter(function(row) { return asBool_(row.active); });
+  return {
+    config: config,
+    configVersion: config.version,
+    identity: { email: Session.getActiveUser().getEmail() || '' },
+    settings: config.settings,
+    types: config.types,
+    leafTypes: config.leafTypes,
+    fields: config.fields,
+    users: users,
+    processes: processes,
+    teamContacts: team
+  };
 }
 
 function runSelfTests() {
